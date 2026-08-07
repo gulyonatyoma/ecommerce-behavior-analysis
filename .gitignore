@@ -216,3 +216,39 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Data files
+data/raw/*
+data/interim/*
+data/processed/*.csv
+data/processed/*.parquet
+
+# Large files
+*.csv
+*.zip
+*.tar
+*.gz
+
+# Models
+models/
+*.pkl
+*.pickle
+*.joblib
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
