@@ -1,142 +1,204 @@
 # Data Dictionary
 
-## Общее описание
+## Project Dataset
 
-Этот документ описывает основные таблицы, поля и их назначение в аналитическом проекте.
+Источник данных:
 
-Данные используются для:
+E-commerce Behavior Data from Multi Category Store
 
-- Product Analytics;
-- Customer Analytics;
-- Econometric Analysis;
-- Machine Learning.
+Тип данных:
 
----
+Event-level behavioral dataset.
 
-# Основные сущности данных
+Каждая строка представляет собой одно действие пользователя на сайте интернет-магазина.
 
-Проект использует три основных уровня данных:
+Основные события:
 
-1. Event-level data
-2. User-level data
-3. Product-level data
+- view — просмотр товара;
+- cart — добавление товара в корзину;
+- remove_from_cart — удаление товара из корзины;
+- purchase — покупка товара.
 
 ---
 
-# 1. Event-level Data
+# Raw Event Data
 
-Уровень пользовательских событий.
+## Основная таблица
 
-Используется для:
+Основной источник данных содержит пользовательские события.
 
-- анализа поведения пользователей;
-- построения воронки;
-- расчёта конверсий;
-- анализа пути пользователя.
+Уровень данных:
 
-Основные поля:
+Event-level
+
 
 | Поле | Описание | Тип |
 |---|---|---|
-| event_id | Уникальный идентификатор события | integer/string |
-| user_id | Идентификатор пользователя | string |
-| timestamp | Время события | datetime |
-| event_type | Тип события | string |
-| product_id | Идентификатор товара | string |
-| category_id | Категория товара | string |
+| event_time | Время совершения события | datetime |
+| event_type | Тип события пользователя | string |
+| product_id | Уникальный идентификатор товара | integer |
+| category_id | Идентификатор категории товара | integer |
+| category_code | Иерархия категории товара | string |
+| brand | Бренд товара | string |
 | price | Цена товара | float |
-| session_id | Идентификатор сессии | string |
-
-Примеры event_type:
-
-- view;
-- cart;
-- purchase.
+| user_id | Идентификатор пользователя | integer |
+| user_session | Идентификатор пользовательской сессии | string |
 
 ---
 
-# 2. User-level Data
+# Event-level Dataset
 
-Агрегированный уровень пользователя.
+Используется для:
+
+- анализа пользовательского поведения;
+- построения воронки продаж;
+- анализа customer journey;
+- расчёта conversion metrics.
+
+Основные метрики:
+
+- количество событий;
+- количество пользователей;
+- количество сессий;
+- распределение типов событий;
+- временная активность пользователей.
+
+---
+
+# Session-level Dataset
+
+Создаётся путем агрегации событий по:
+
+- user_session;
+- user_id.
+
+Пример структуры:
+
+| Поле | Описание | Тип |
+|---|---|---|
+| user_session | Идентификатор сессии | string |
+| user_id | Пользователь | integer |
+| session_start | Начало сессии | datetime |
+| session_end | Конец сессии | datetime |
+| session_duration | Длительность сессии | float |
+| views_count | Количество просмотров | integer |
+| cart_count | Добавления в корзину | integer |
+| purchase_flag | Была ли покупка | binary |
+| total_spent | Сумма покупки | float |
+
+Используется для:
+
+- funnel analysis;
+- purchase prediction;
+- econometric models.
+
+---
+
+# User-level Dataset
+
+Создаётся путем агрегации событий по пользователю.
+
+Пример структуры:
+
+| Поле | Описание | Тип |
+|---|---|---|
+| user_id | Идентификатор пользователя | integer |
+| sessions_count | Количество сессий | integer |
+| total_events | Количество событий | integer |
+| views_count | Количество просмотров | integer |
+| carts_count | Количество добавлений в корзину | integer |
+| purchases_count | Количество покупок | integer |
+| total_spent | Общая сумма покупок | float |
+| avg_price | Средняя цена товара | float |
+| unique_products | Количество уникальных товаров | integer |
+| unique_categories | Количество категорий | integer |
 
 Используется для:
 
 - Customer Analytics;
-- сегментации;
-- ML-моделей;
-- анализа поведения покупателей.
-
-Основные поля:
-
-| Поле | Описание | Тип |
-|---|---|---|
-| user_id | Идентификатор пользователя | string |
-| total_events | Количество событий | integer |
-| sessions_count | Количество сессий | integer |
-| views_count | Количество просмотров | integer |
-| purchases_count | Количество покупок | integer |
-| total_revenue | Общая сумма покупок | float |
-| avg_price | Средняя цена товара | float |
-| last_activity_date | Последняя активность | datetime |
+- RFM segmentation;
+- user clustering;
+- ML features.
 
 ---
 
-# 3. Product-level Data
+# Product-level Dataset
 
-Уровень товара.
+Создаётся путем агрегации событий по товару.
+
+Пример структуры:
+
+| Поле | Описание | Тип |
+|---|---|---|
+| product_id | Идентификатор товара | integer |
+| category_id | Категория товара | integer |
+| brand | Бренд | string |
+| views_count | Количество просмотров | integer |
+| cart_count | Добавления в корзину | integer |
+| purchases_count | Количество покупок | integer |
+| revenue | Выручка | float |
+| conversion_rate | Конверсия товара | float |
 
 Используется для:
 
 - Product Analytics;
 - анализа категорий;
-- анализа revenue.
-
-Основные поля:
-
-| Поле | Описание | Тип |
-|---|---|---|
-| product_id | Идентификатор товара | string |
-| category_id | Категория товара | string |
-| views | Количество просмотров | integer |
-| add_to_cart | Добавления в корзину | integer |
-| purchases | Количество покупок | integer |
-| revenue | Выручка | float |
-| conversion_rate | Конверсия | float |
+- оценки эффективности товаров.
 
 ---
 
-# ML Features
+# Machine Learning Dataset
 
-Для модели вероятности покупки могут использоваться:
+Формируется на основе session-level данных.
 
-## User Features
+Target:
+
+| Поле | Описание |
+|---|---|
+| purchase_flag | Факт покупки пользователем |
+
+Значения:
+
+0 — покупка отсутствует
+
+1 — покупка произошла
+
+
+---
+
+## Features
+
+### Behavioral Features
 
 - количество просмотров;
-- количество сессий;
-- количество взаимодействий;
-- история покупок;
-- средняя цена просмотренных товаров.
+- количество действий;
+- длительность сессии;
+- количество товаров;
+- количество категорий.
 
-## Product Features
+---
 
-- категория товара;
+### Product Features
+
 - цена;
-- популярность;
-- количество просмотров;
-- историческая конверсия.
+- категория;
+- бренд;
+- количество взаимодействий с товаром.
 
-## Behavioral Features
+---
 
-- время до покупки;
-- количество действий перед покупкой;
-- глубина просмотра;
-- частота активности.
+### User Features
+
+- история активности;
+- количество сессий;
+- предыдущие покупки;
+- частота взаимодействия.
 
 ---
 
 # Data Quality Checks
 
-Перед анализом должны проверяться:
+Перед анализом выполняются проверки:
 
 ## Completeness
 
@@ -146,26 +208,32 @@
 ## Validity
 
 - корректность типов данных;
-- допустимые значения.
+- корректность цены;
+- корректность временных значений.
 
 ## Consistency
 
-- уникальность ID;
-- согласованность таблиц.
+- уникальность user_id;
+- уникальность product_id;
+- соответствие событий и пользователей.
 
-## Accuracy
+## Business Logic
 
-- отсутствие аномальных значений;
-- корректность событий.
+Проверки:
+
+- purchase события должны иметь цену;
+- event_time должен быть в допустимом диапазоне;
+- user_session должен быть заполнен.
 
 ---
 
-# Data Usage
+# Analytics Mapping
 
 | Анализ | Используемые данные |
 |---|---|
-| Funnel Analysis | Event-level |
-| Product Analytics | Event + Product-level |
-| Customer Segmentation | User-level |
-| Econometrics | User + Product-level |
-| Machine Learning | User-level + Features |
+| Data Quality | Raw Event Data |
+| Funnel Analysis | Event + Session Data |
+| Product Analytics | Product-level Data |
+| Customer Analytics | User-level Data |
+| Econometrics | Session-level Data |
+| Machine Learning | Session-level Features |
