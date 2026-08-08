@@ -1,5 +1,9 @@
 # Анализ поведения пользователей в e-commerce
 
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![GitHub Actions](https://github.com/gulyonatyoma/ecommerce-behavior-analysis/actions/workflows/python-check.yml/badge.svg)
+
 Аналитический проект по исследованию поведения пользователей интернет-магазина.
 
 В рамках проекта выполняются:
