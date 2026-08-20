@@ -4,7 +4,6 @@
 ![SQL](https://img.shields.io/badge/SQL-ClickHouse-orange)
 ![BI](https://img.shields.io/badge/BI-DataLens-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![GitHub Actions](https://github.com/gulyonatyoma/ecommerce-behavior-analysis/actions/workflows/python-check.yml/badge.svg)
 
 End-to-end аналитический проект по исследованию пользовательского поведения в крупном e-commerce event log: от проверки качества и построения clean layer до продуктовых витрин и интерактивного BI-dashboard.
 
