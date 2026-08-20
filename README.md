@@ -112,7 +112,7 @@ Dashboard содержит 5 вкладок:
 4. Data Quality & Methodology
 5. April Case Study
 
-**Public dashboard:** TODO — вставить публичную ссылку DataLens.
+**Public dashboard:** https://datalens.yandex/pl83yhp8a41c8
 
 Подробнее: [docs/dashboard.md](docs/dashboard.md).
 
