@@ -1,6 +1,6 @@
 # SQL layer
 
-Здесь хранится **curated reproducible subset** SQL, а не полный архив ad-hoc запросов исследования.
+Здесь хранится **curated documented subset** SQL, а не полный архив ad-hoc и historical production queries. Для части объектов доступны schema snapshots и reference implementations; exact historical transformation SQL восстановлен не для всех витрин.
 
 ## Структура
 
