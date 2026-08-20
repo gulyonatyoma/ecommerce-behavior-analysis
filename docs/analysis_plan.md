@@ -1,243 +1,192 @@
-# Analysis Plan
+# Analysis Plan and Project Roadmap
 
-## Цель проекта
+## Статус проекта
 
-Цель проекта — исследовать поведение пользователей e-commerce платформы, понять факторы, связанные с совершением покупки, и сформировать практические рекомендации.
+Основной **product analytics / data quality / BI** этап выполнен.
 
----
+Текущая реализованная часть включает:
 
-# 1. Data Quality Analysis
+1. Data Quality investigation;
+2. evidence-based clean layer;
+3. user identity stitching;
+4. trusted funnel analysis;
+5. user and repeat-behavior analysis;
+6. product, brand and price analysis;
+7. April conversion case study;
+8. ClickHouse presentation marts;
+9. public Yandex DataLens dashboard.
 
-## Цель
-
-Проверить качество исходных данных перед проведением анализа.
-
-## Проверки:
-
-- количество записей;
-- количество пользователей;
-- количество товаров;
-- пропущенные значения;
-- дубликаты;
-- корректность типов данных;
-- распределение событий;
-- временные диапазоны данных.
-
-## Результат:
-
-Подготовленный и проверенный аналитический датасет.
+Econometrics и Machine Learning остаются возможными следующими этапами и не заявляются как уже выполненный результат.
 
 ---
 
-# 2. Product Analytics
+## 1. Data Quality — completed
 
-## Цель
+Проверены:
 
-Понять, как пользователи взаимодействуют с продуктом.
+- row counts и временной диапазон;
+- missing values;
+- exact duplicates;
+- event-type distribution;
+- logging gaps;
+- user/session identity conflicts;
+- session continuity limitations;
+- product/category mapping instability;
+- price validity.
 
-## Основные вопросы:
+Результат:
 
-- Как пользователи проходят путь до покупки?
-- Где происходят основные потери?
-- Какие товары и категории наиболее успешные?
-
-## Анализы:
-
-### Funnel Analysis
-
-Этапы:
-
-view
-
-↓
-
-cart
-
-↓
-
-purchase
-
-
-Метрики:
-
-- conversion rate;
-- drop-off rate;
-- количество пользователей на каждом этапе.
+- `qa.data_quality_rules`;
+- документированные DQ incidents;
+- trusted eligibility policy;
+- `clean.events`.
 
 ---
 
-### Product Performance
+## 2. Product Analytics — completed
 
-Метрики:
+### Funnel
 
-- количество просмотров;
-- количество добавлений в корзину;
-- количество покупок;
-- revenue;
-- conversion rate.
+Основной funnel:
 
----
+`view -> cart -> purchase`
 
-# 3. Customer Analytics
+Единица анализа:
 
-## Цель
+`canonical_user_id + product_id`
 
-Понять различия между пользователями.
+Основные trusted metrics:
 
-## Анализы:
+- View to Cart 1d;
+- View to Purchase 1d.
 
-### Buyer vs Non-Buyer Analysis
+Trusted metrics исключают observation windows, пересекающие подтверждённые relevant logging incidents.
 
-Сравнение:
+### Product structure
 
-- количество событий;
-- количество сессий;
-- просмотренные товары;
-- активность;
-- поведение перед покупкой.
+Исследуются:
 
----
-
-### Cohort Analysis
-
-Анализ:
-
-- удержания пользователей;
-- повторных покупок;
-- изменения активности во времени.
+- observed viewed assortment;
+- purchased products;
+- SKU concentration;
+- month-to-month observed assortment turnover;
+- brands;
+- missing brand share;
+- price-band composition.
 
 ---
 
-### RFM Segmentation
+## 3. Customer Analytics — completed for event-level scope
 
-Признаки:
+Реализованы:
 
-Recency
+- active-user trends;
+- purchasing-user share;
+- user purchase lifecycle;
+- repeat activity;
+- D7 / D30 follow-up coverage;
+- repeat cadence;
+- purchase-event value concentration.
 
-- когда пользователь совершал последнее действие.
+Repeat activity означает повторную purchase activity в другой календарный день и не интерпретируется как доказанный repeat order.
 
-Frequency
-
-- насколько часто пользователь взаимодействует.
-
-Monetary
-
-- сколько пользователь потратил.
-
-
----
-
-# 4. Econometric Analysis
-
-## Цель
-
-Исследовать факторы, связанные с вероятностью покупки.
-
-## Зависимая переменная:
-
-purchase_flag
-
-0 — пользователь не совершил покупку.
-
-1 — пользователь совершил покупку.
-
-
-## Модели:
-
-- Linear Probability Model;
-- Logistic Regression;
-- Probit Model.
-
-
-## Возможные факторы:
-
-- цена;
-- категория товара;
-- количество просмотров;
-- количество действий пользователя;
-- характеристики сессии.
+Классический order-level RFM с точным Monetary / Frequency of orders не используется, потому что в extract отсутствует `order_id`.
 
 ---
 
-# 5. Machine Learning
+## 4. April Case Study — completed
 
-## Цель
+Задача:
 
-Построить модель прогнозирования вероятности покупки.
+проверить, можно ли объяснить March-to-April decline View to Purchase 1d наблюдаемыми факторами.
 
-## Target:
+Проверены:
 
-purchase_flag
+- purchase logging outage;
+- product mix;
+- price-band mix;
+- same-product performance;
+- price changes;
+- user composition;
+- recency × frequency segments.
 
+Результат:
 
-## Feature Groups:
-
-### User Features
-
-- количество сессий;
-- количество событий;
-- история активности;
-- поведенческие характеристики.
-
-
-### Product Features
-
-- цена;
-- категория;
-- популярность товара.
-
-
-### Behavioral Features
-
-- количество действий перед покупкой;
-- время до покупки;
-- глубина взаимодействия.
-
-
-## Модели:
-
-Baseline:
-
-- Logistic Regression.
-
-
-Advanced:
-
-- Random Forest;
-- XGBoost;
-- LightGBM;
-- CatBoost.
-
-
-## Evaluation Metrics:
-
-- ROC-AUC;
-- Precision;
-- Recall;
-- F1-score;
-- Calibration.
+доступный event log не позволяет надёжно приписать decline одной наблюдаемой причине.
 
 ---
 
-# 6. Business Recommendations
+## 5. BI Dashboard — completed
 
-После анализа должны быть сформированы:
+Публичный DataLens dashboard содержит пять вкладок:
 
-- основные точки потери пользователей;
-- рекомендации по улучшению funnel;
-- ключевые сегменты клиентов;
-- факторы, связанные с покупкой;
-- возможности применения ML-модели.
+1. Executive Overview;
+2. Users & Repeat Behavior;
+3. Products, Brands & Prices;
+4. Data Quality & Methodology;
+5. April Case Study.
+
+Dashboard работает поверх ClickHouse presentation marts.
 
 ---
 
-# Expected Deliverables
+## 6. Econometric Analysis — future scope
 
-Итоговые результаты:
+Возможный следующий этап проекта.
+
+Потенциальные задачи:
+
+- моделирование вероятности purchase activity;
+- Logistic / Probit models;
+- temporal controls;
+- user/product fixed effects там, где это технически и методологически оправдано;
+- robustness checks.
+
+Ограничение:
+
+наблюдательные зависимости не должны интерпретироваться как causal effects без отдельной identification strategy.
+
+---
+
+## 7. Machine Learning — future scope
+
+Возможный следующий этап:
+
+purchase propensity prediction на корректно определённом observation unit.
+
+Перед построением модели необходимо отдельно зафиксировать:
+
+- prediction timestamp;
+- target horizon;
+- leakage policy;
+- train/validation temporal split;
+- handling DQ periods;
+- entity definitions.
+
+Потенциальные модели:
+
+- Logistic Regression baseline;
+- gradient boosting;
+- calibrated classifiers.
+
+ML-часть не должна использовать недоказанные order-level признаки.
+
+---
+
+## Deliverables
+
+### Completed
 
 - Data Quality Report;
-- Product Analytics Report;
-- Customer Analytics Report;
+- methodology documentation;
+- clean event layer;
+- analytical marts;
+- April Case Study;
+- public BI dashboard;
+- curated SQL documentation.
+
+### Future
+
 - Econometric Analysis Report;
 - ML Model Report;
-- Final Presentation.
+- final model comparison / deployment-oriented work, если команда решит продолжать проект.
