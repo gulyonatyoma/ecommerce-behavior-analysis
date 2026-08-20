@@ -1,240 +1,134 @@
 # Анализ поведения пользователей в e-commerce
 
 ![Python](https://img.shields.io/badge/python-3.11-blue)
+![SQL](https://img.shields.io/badge/SQL-ClickHouse-orange)
+![BI](https://img.shields.io/badge/BI-DataLens-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![GitHub Actions](https://github.com/gulyonatyoma/ecommerce-behavior-analysis/actions/workflows/python-check.yml/badge.svg)
 
-Аналитический проект по исследованию поведения пользователей интернет-магазина.
+End-to-end аналитический проект по исследованию пользовательского поведения в крупном e-commerce event log: от проверки качества и построения clean layer до продуктовых витрин и интерактивного BI-dashboard.
 
-В рамках проекта выполняются:
-- анализ пользовательского поведения;
-- исследование воронки продаж;
-- анализ товаров и категорий;
-- сегментация клиентов;
-- эконометрический анализ факторов покупки;
-- построение ML-модели прогнозирования вероятности покупки.
+## Что сделано
 
----
+- проанализировано более **411 млн событий**;
+- построен evidence-first Data Quality framework из **17 документированных правил**;
+- подтверждён и локально исправлен февральский инцидент exact purchase duplicates;
+- выявлены logging gaps в ноябре, феврале и апреле;
+- выполнен identity stitching для конфликтующих `user_id`;
+- построены trusted funnel, repeat-behavior, product, brand и price-band marts;
+- проведён отдельный April Case Study;
+- собран публичный dashboard в Yandex DataLens.
 
-# Цель проекта
+## Стек
 
-Цель проекта — понять, как пользователи взаимодействуют с e-commerce платформой, какие факторы связаны с совершением покупки и какие аналитические выводы могут помочь улучшить продуктовые решения.
+- **ClickHouse Cloud**
+- **SQL**
+- **Python**
+- **Yandex DataLens**
+- **Git / GitHub**
 
-Основные вопросы исследования:
+## Данные и ограничения
 
-- Где пользователи теряются в процессе покупки?
-- Какие категории и товары дают основной вклад в продажи?
-- Чем отличаются разные группы пользователей?
-- Какие факторы связаны с вероятностью покупки?
-- Можно ли предсказывать вероятность покупки заранее?
+Исходный датасет — event-level лог с событиями `view`, `cart` и `purchase`.
 
----
+В extract отсутствуют `order_id`, уникальный `event_id`, `quantity` и итоговая сумма заказа. Поэтому проект не трактует:
 
-# Направления анализа
+- один `purchase` как доказанный уникальный заказ;
+- `sum(price)` как точный GMV;
+- число purchase-событий как units sold;
+- повторное purchase-событие как доказанный repeat order.
 
-## Product Analytics
+Подробнее: [docs/methodology.md](docs/methodology.md).
 
-Включает:
+## Архитектура
 
-- анализ пользовательского трафика;
-- анализ событий;
-- исследование conversion funnel;
-- поиск drop-off точек;
-- анализ товаров, категорий и брендов;
-- анализ revenue.
+```text
+raw
+  ↓
+qa
+  ↓
+clean
+  ↓
+mart
+  ↓
+dashboard
+```
 
----
+## Ключевые результаты
 
-## Customer Analytics
+### Data Quality
 
-Включает:
+- raw rows: **411,709,736**
+- clean rows: **411,558,649**
+- удалено **151,087** exact duplicate purchase events внутри подтверждённого February incident
+- найдено **7,037** conflicting sessions
+- **13,927** affected raw user IDs сведены к **6,858** canonical users
 
-- анализ поведения пользователей;
-- buyer vs non-buyer analysis;
-- cohort analysis;
-- retention analysis;
-- RFM-сегментацию;
-- behavioral segmentation;
-- customer value analysis.
+Подробнее: [docs/data_quality.md](docs/data_quality.md).
 
----
+### Trusted funnel
 
-## Econometric Analysis
+| Month | View to Purchase 1d |
+|---|---:|
+| Oct 2019 | 0.890% |
+| Nov 2019 | 1.589% |
+| Dec 2019 | 1.918% |
+| Jan 2020 | 1.629% |
+| Feb 2020 | 1.742% |
+| Mar 2020 | 2.090% |
+| Apr 2020 | 1.823% |
 
-Включает:
+### Repeat behavior
 
-- модели вероятности покупки;
-- Linear Probability Model;
-- Logistic Regression;
-- Probit models;
-- анализ влияния характеристик товара;
-- robustness checks.
+Для fully observed Dec 2019 — Feb 2020 cohorts:
 
-Важно:
+- median time to repeat activity: **5 дней**
+- P90: **22 дня**
+- D7 repeat activity: около **16.7%**
+- D30 repeat activity: около **28%**
 
-Эконометрические результаты показывают статистические зависимости и не являются доказательством причинного эффекта без специальной идентификационной стратегии.
+### Products, brands and prices
 
----
+- observed viewed assortment: **166.8K → 263.1K SKU**
+- top 10% purchased SKU дают около **93–95% purchase-event value**
+- в Mar 2020 price bands выше **$160** дают около **46% views**, но около **83% purchase-event value**
+- `>$400` segment даёт около **60% purchase-event value**
 
-## Machine Learning
+## April Case Study
 
-Включает:
+Проверены purchase logging outage, product mix, price-band mix, same-product comparison, price changes, user composition и comparable-user segments.
 
-- подготовку признаков;
-- построение prediction pipeline;
-- purchase propensity modeling;
-- temporal validation;
-- оценку качества моделей;
-- explainability analysis;
-- error analysis.
+Вывод: доступный event log не позволяет надёжно приписать апрельское снижение одной наблюдаемой причине.
 
-Важно:
+Подробнее: [docs/april_case_study.md](docs/april_case_study.md).
 
-Важность признаков модели показывает вклад в предсказание, но не является доказательством причинного влияния.
+## Dashboard
 
----
+Dashboard содержит 5 вкладок:
 
-# Структура проекта
+1. Executive Overview
+2. Users & Repeat Behavior
+3. Products, Brands & Prices
+4. Data Quality & Methodology
+5. April Case Study
 
-Основные директории:
+**Public dashboard:** https://datalens.yandex/pl83yhp8a41c8
 
-data/
-- исходные и обработанные данные
+Подробнее: [docs/dashboard.md](docs/dashboard.md).
 
-docs/
-- документация проекта
+## SQL
 
-notebooks/
-- аналитические ноутбуки
+В `sql/` хранится только curated reproducible subset: ключевые DDL, DQ checks, clean transformations, analytical marts и dashboard marts.
 
-01_data_quality/
-- проверка качества данных
+См. [sql/README.md](sql/README.md).
 
-02_product_analytics/
-- анализ продукта и воронки
-
-03_customer_analytics/
-- анализ пользователей
-
-04_econometrics/
-- эконометрические модели
-
-05_machine_learning/
-- ML модели
-
-reports/
-- итоговые отчёты и презентации
-
-sql/
-- SQL-запросы
-
-src/
-- Python-код проекта
-
-tests/
-- тесты
-
----
-
-# Методология проекта
-
-Этапы работы:
-
-1. Data Quality Checks
-
-Проверка структуры данных:
-- пропуски;
-- дубликаты;
-- аномалии;
-- корректность событий.
-
-2. Data Cleaning & Preparation
-
-Подготовка данных:
-- очистка;
-- преобразование типов;
-- создание аналитических таблиц.
-
-3. Analytical Datasets
-
-Создание витрин:
-
-- session-level dataset;
-- user-level dataset;
-- product/category dataset.
-
-4. Product Analytics
-
-Исследование:
-
-- трафика;
-- событий;
-- funnel;
-- товаров;
-- категорий.
-
-5. Customer Analytics
-
-Исследование:
-
-- пользовательского поведения;
-- сегментов;
-- retention;
-- customer value.
-
-6. Econometric Analysis
-
-Исследование факторов, связанных с покупкой.
-
-7. Machine Learning
-
-Создание модели прогнозирования вероятности покупки.
-
-8. Business Recommendations
-
-Формирование практических рекомендаций.
-
----
-
-# Используемые технологии
-
-Основные инструменты:
-
-- Python
-- SQL
-- Jupyter Notebook
-- Statistical Modeling Libraries
-- Machine Learning Libraries
-- GitHub
-- Jira
-
----
-
-# Организация работы
-
-Проект использует:
-
-- GitHub для хранения кода;
-- Jira для управления задачами;
-- Pull Request workflow для проверки изменений;
-
----
-
-# Ограничения анализа
-
-Основные ограничения:
-
-- данные являются наблюдательными;
-- отсутствует полноценная экспериментальная проверка;
-- возможна эндогенность некоторых факторов;
-- ограниченное временное окно данных;
-- ML-модель требует дополнительной проверки перед использованием.
-
----
-
-# Команда
+## Команда
 
 - Артём Гостев
 - Артур Камалов
 - Глеб Касимов
 - Никита Бузин
+
+## License
+
+MIT
