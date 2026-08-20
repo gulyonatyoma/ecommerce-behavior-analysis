@@ -1,6 +1,5 @@
 # Анализ поведения пользователей в e-commerce
 
-![Python](https://img.shields.io/badge/python-3.11-blue)
 ![SQL](https://img.shields.io/badge/SQL-ClickHouse-orange)
 ![BI](https://img.shields.io/badge/BI-DataLens-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -22,7 +21,7 @@ End-to-end аналитический проект по исследованию
 
 - **ClickHouse Cloud**
 - **SQL**
-- **Python**
+- **Python** — использован для identity stitching (Union-Find)
 - **Yandex DataLens**
 - **Git / GitHub**
 
@@ -117,7 +116,7 @@ Dashboard содержит 5 вкладок:
 
 ## SQL
 
-В `sql/` хранится только curated reproducible subset: ключевые DDL, DQ checks, clean transformations, analytical marts и dashboard marts.
+В `sql/` хранится curated documented subset: ключевые DDL и schema snapshots, DQ checks, reference transformations и presentation queries. Exact historical production SQL восстановлен не для всех витрин.
 
 См. [sql/README.md](sql/README.md).
 
