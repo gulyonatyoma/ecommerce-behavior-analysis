@@ -1,0 +1,485 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(0, 175, 202, 0.18);
+  color: #0f172a;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.easter-stage {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 224, 120, 0.2), transparent 28%),
+    linear-gradient(145deg, #006d92 0%, #00aeca 48%, #007ea5 100%);
+  animation: easter-stage-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  isolation: isolate;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+
+.easter-stage::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  opacity: 0.18;
+  background-image:
+    linear-gradient(30deg, transparent 48%, #f6c445 49%, #f6c445 51%, transparent 52%),
+    linear-gradient(-30deg, transparent 48%, #f6c445 49%, #f6c445 51%, transparent 52%);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle, transparent 22%, black 90%);
+}
+
+.easter-glow {
+  position: absolute;
+  width: 38vw;
+  height: 38vw;
+  border-radius: 999px;
+  background: rgba(246, 196, 69, 0.22);
+  filter: blur(80px);
+  animation: easter-glow-pulse 2.8s ease-in-out infinite alternate;
+}
+
+.easter-glow-left {
+  left: -16vw;
+  top: -12vw;
+}
+
+.easter-glow-right {
+  right: -14vw;
+  bottom: -16vw;
+  animation-delay: -1.4s;
+}
+
+.easter-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  display: flex;
+  width: min(45vw, 570px);
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: easter-center-in 900ms 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-style: preserve-3d;
+}
+
+.easter-flag-shell {
+  position: relative;
+  width: min(38vw, 460px);
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  border-radius: 26px;
+  background: #00afcb;
+  box-shadow:
+    0 34px 90px rgba(0, 35, 57, 0.48),
+    0 0 70px rgba(246, 196, 69, 0.32),
+    inset 0 -14px 24px rgba(0, 65, 90, 0.2);
+  animation: easter-flag-wave 2.4s ease-in-out infinite alternate;
+  transform-origin: center;
+  transform-style: preserve-3d;
+}
+
+.easter-flag-shell::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.32), transparent 28%, transparent 68%, rgba(255, 225, 124, 0.18));
+  content: "";
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.easter-kicker {
+  margin: 22px 0 0;
+  color: #ffe28b;
+  font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.easter-title {
+  margin: 8px 0 0;
+  color: white;
+  font-size: clamp(1.35rem, 3vw, 2.7rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  text-shadow: 0 8px 26px rgba(0, 55, 76, 0.35);
+}
+
+.easter-orbits {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.easter-photo-orbit {
+  position: absolute;
+  inset: 0;
+  animation: easter-orbit var(--egg-duration) linear infinite;
+  transform-style: preserve-3d;
+}
+
+.easter-photo-jump {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(160px, 18vw, 250px);
+  margin: 0;
+  transform: translateX(min(31vw, 410px)) translateZ(90px);
+  animation: easter-jump 980ms var(--egg-delay) cubic-bezier(0.36, 0, 0.66, -0.56) infinite alternate;
+  transform-style: preserve-3d;
+}
+
+.easter-photo-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+  border: clamp(3px, 0.35vw, 6px) solid #f6c445;
+  border-radius: 32% 68% 55% 45% / 47% 36% 64% 53%;
+  background: white;
+  box-shadow:
+    0 28px 65px rgba(0, 36, 57, 0.5),
+    0 0 0 5px rgba(255, 255, 255, 0.3),
+    inset 0 -18px 30px rgba(0, 42, 64, 0.18);
+  animation: easter-card-tilt 1.8s var(--egg-delay) ease-in-out infinite alternate;
+  transform-style: preserve-3d;
+}
+
+.easter-photo-frame::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.48), transparent 24%, transparent 66%, rgba(246, 196, 69, 0.24));
+  content: "";
+  pointer-events: none;
+  animation: easter-card-glint 2.6s ease-in-out infinite;
+}
+
+.easter-photo-frame img {
+  transform: scale(1.06) translateZ(20px);
+}
+
+.easter-depth-scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(86vw, 1120px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.easter-depth-ring {
+  position: absolute;
+  inset: 8%;
+  border: 2px solid rgba(255, 225, 124, 0.36);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(246, 196, 69, 0.22), inset 0 0 30px rgba(246, 196, 69, 0.12);
+  transform-style: preserve-3d;
+}
+
+.easter-depth-ring::before,
+.easter-depth-ring::after {
+  position: absolute;
+  width: 18px;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: #f6c445;
+  box-shadow: 0 0 20px rgba(246, 196, 69, 0.85);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.easter-depth-ring::before {
+  left: 9%;
+  top: 17%;
+}
+
+.easter-depth-ring::after {
+  bottom: 14%;
+  right: 12%;
+}
+
+.easter-depth-ring-one {
+  animation: easter-ring-one 8s linear infinite;
+}
+
+.easter-depth-ring-two {
+  inset: 18%;
+  border-style: dashed;
+  animation: easter-ring-two 6.5s linear infinite reverse;
+}
+
+.easter-depth-ring-three {
+  inset: 28%;
+  border-width: 3px;
+  animation: easter-ring-three 5s linear infinite;
+}
+
+.easter-ribbon {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 0;
+  border-block: 2px solid rgba(255, 235, 164, 0.72);
+  background:
+    linear-gradient(90deg, rgba(0, 93, 128, 0.94), rgba(0, 183, 207, 0.98) 38%, rgba(0, 117, 151, 0.96)),
+    #00afcb;
+  color: #ffe17d;
+  box-shadow: 0 22px 45px rgba(0, 36, 58, 0.4), inset 0 6px 12px rgba(255, 255, 255, 0.12);
+  font-size: clamp(0.85rem, 1.8vw, 1.35rem);
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.easter-ribbon span {
+  padding: 22px 28px;
+  text-shadow: 0 3px 12px rgba(0, 40, 57, 0.42);
+}
+
+.easter-ribbon-back {
+  left: -135vw;
+  top: 15%;
+  z-index: 2;
+  opacity: 0.72;
+  animation: easter-ribbon-back 10s -3.5s linear infinite;
+}
+
+.easter-ribbon-front {
+  bottom: 9%;
+  left: -145vw;
+  z-index: 14;
+  animation: easter-ribbon-front 8.5s -1.2s linear infinite;
+}
+
+.easter-ornament {
+  position: absolute;
+  left: 50%;
+  z-index: 4;
+  transform: translateX(-50%);
+  color: #f6c445;
+  font-size: clamp(1rem, 2.5vw, 2.1rem);
+  letter-spacing: 0.35em;
+  white-space: nowrap;
+  text-shadow: 0 0 24px rgba(246, 196, 69, 0.55);
+  animation: easter-ornament-in 800ms 350ms ease-out both;
+}
+
+.easter-ornament-top {
+  top: 3.5vh;
+}
+
+.easter-ornament-bottom {
+  bottom: 3.5vh;
+}
+
+.easter-spark {
+  position: absolute;
+  left: var(--spark-x);
+  bottom: -30px;
+  z-index: 2;
+  color: #ffe17d;
+  font-size: var(--spark-size);
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(246, 196, 69, 0.7));
+  animation: easter-spark-rise var(--spark-duration) var(--spark-delay) linear infinite;
+}
+
+.easter-close {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 20;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(0, 69, 94, 0.58);
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.easter-close:hover {
+  background: rgba(0, 50, 70, 0.8);
+  transform: scale(1.06);
+}
+
+@keyframes easter-stage-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes easter-center-in {
+  from { opacity: 0; transform: translate(-50%, -42%) scale(0.82); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes easter-flag-wave {
+  from { transform: translateZ(90px) rotateY(-11deg) rotateX(4deg) translateY(-6px); }
+  to { transform: translateZ(130px) rotateY(11deg) rotateX(-4deg) translateY(6px); }
+}
+
+@keyframes easter-orbit {
+  from { transform: rotate(var(--egg-angle)); }
+  to { transform: rotate(calc(var(--egg-angle) + 360deg)); }
+}
+
+@keyframes easter-jump {
+  from { margin-top: -34px; scale: 0.94; }
+  to { margin-top: 28px; scale: 1.07; }
+}
+
+@keyframes easter-card-tilt {
+  from { transform: rotateX(-11deg) rotateY(-16deg) rotateZ(-3deg); }
+  to { transform: rotateX(10deg) rotateY(16deg) rotateZ(3deg); }
+}
+
+@keyframes easter-card-glint {
+  0%, 28% { opacity: 0.15; transform: translateX(-70%); }
+  62% { opacity: 0.72; }
+  100% { opacity: 0.22; transform: translateX(70%); }
+}
+
+@keyframes easter-ring-one {
+  from { transform: rotateX(67deg) rotateZ(0deg) translateZ(-80px); }
+  to { transform: rotateX(67deg) rotateZ(360deg) translateZ(-80px); }
+}
+
+@keyframes easter-ring-two {
+  from { transform: rotateY(66deg) rotateZ(0deg) translateZ(-20px); }
+  to { transform: rotateY(66deg) rotateZ(360deg) translateZ(-20px); }
+}
+
+@keyframes easter-ring-three {
+  from { transform: rotateX(56deg) rotateY(36deg) rotateZ(0deg) translateZ(50px); }
+  to { transform: rotateX(56deg) rotateY(36deg) rotateZ(360deg) translateZ(50px); }
+}
+
+@keyframes easter-ribbon-back {
+  from { transform: translate3d(0, -12vh, -260px) rotateZ(-10deg) rotateX(58deg); }
+  to { transform: translate3d(250vw, 22vh, -260px) rotateZ(-10deg) rotateX(58deg); }
+}
+
+@keyframes easter-ribbon-front {
+  from { transform: translate3d(0, 16vh, 260px) rotateZ(8deg) rotateX(-38deg); }
+  to { transform: translate3d(260vw, -34vh, 260px) rotateZ(8deg) rotateX(-38deg); }
+}
+
+@keyframes easter-spark-rise {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.7); }
+  14% { opacity: 0.9; }
+  80% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(-108vh) rotate(280deg) scale(1.2); }
+}
+
+@keyframes easter-glow-pulse {
+  from { opacity: 0.55; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes easter-ornament-in {
+  from { opacity: 0; letter-spacing: 0.8em; }
+  to { opacity: 1; letter-spacing: 0.35em; }
+}
+
+@media (max-width: 700px) {
+  .easter-center {
+    width: 72vw;
+  }
+
+  .easter-flag-shell {
+    width: 64vw;
+    border-radius: 18px;
+  }
+
+  .easter-photo-jump {
+    width: clamp(105px, 30vw, 148px);
+    transform: translateX(min(34vw, 155px)) translateZ(50px);
+  }
+
+  .easter-depth-scene {
+    width: 118vw;
+  }
+
+  .easter-ribbon span {
+    padding: 16px 20px;
+  }
+
+  .easter-title {
+    max-width: 70vw;
+  }
+
+  .easter-ornament {
+    letter-spacing: 0.15em;
+  }
+}

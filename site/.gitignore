@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.env*.local
+.vercel
+.runtime
+.tools
+*.log
+ml-section-*.png
+certificates/
+.DS_Store
+*.tsbuildinfo
