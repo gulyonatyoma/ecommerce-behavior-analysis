@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
-const triggerWord = "котакбас";
+const triggerWord = "каспи";
 
 const team = [
   { name: "Никита Бузин", photo: "/team/nikita-buzin.png" },
